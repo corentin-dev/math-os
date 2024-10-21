@@ -18,7 +18,7 @@ build_push:
     - |
       echo "Building and pushing image"
       TIMESTAMP=$(date +%Y%m%d)
-      buildah bud -t ${MY_IMAGE_NAME}:latest .
+      buildah build --storage-driver vfs -t ${MY_IMAGE_NAME}:latest .
       buildah tag ${MY_IMAGE_NAME}:latest ${MY_IMAGE_NAME}:$TIMESTAMP
 
   artifacts:
