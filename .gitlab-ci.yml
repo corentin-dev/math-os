@@ -14,9 +14,6 @@ build_push:
   only:
     - main
     - schedules
-  except:
-    - paths:
-      - '**/README.md'
   script:
     - |
       echo "Building and pushing image"
