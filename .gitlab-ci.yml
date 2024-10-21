@@ -1,0 +1,54 @@
+stages:
+  - build
+  - push
+  - sign
+
+variables:
+  MY_IMAGE_NAME: $CI_PROJECT_NAME
+  MY_IMAGE_DESC: "math-os"
+  IMAGE_REGISTRY: "registry.plmlab.math.cnrs.fr/${CI_PROJECT_NAMESPACE}"
+
+build_push:
+  stage: build
+  image: quay.io/buildah/stable:latest
+  only:
+    - main
+    - schedules
+  except:
+    - paths:
+      - '**/README.md'
+  script:
+    - |
+      echo "Building and pushing image"
+      TIMESTAMP=$(date +%Y%m%d)
+      buildah bud -t ${MY_IMAGE_NAME}:latest .
+      buildah tag ${MY_IMAGE_NAME}:latest ${MY_IMAGE_NAME}:$TIMESTAMP
+
+  artifacts:
+    paths:
+      - image_metadata.txt
+
+push_image:
+  stage: push
+  image: quay.io/buildah/stable:latest
+  dependencies:
+    - build_push
+  only:
+    - main
+    - schedules
+  script:
+    - echo $CI_REGISTRY_PASSWORD | buildah login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
+    - |
+      buildah push ${MY_IMAGE_NAME}:latest $CI_REGISTRY/$CI_PROJECT_PATH:latest
+      buildah push ${MY_IMAGE_NAME}:$TIMESTAMP $CI_REGISTRY/$CI_PROJECT_PATH:$TIMESTAMP
+
+# sign_image:
+#   stage: sign
+#   image: quay.io/buildah/stable:latest
+#   only:
+#     - main
+#   script:
+#     - cosign sign -y --key env://COSIGN_PRIVATE_KEY $CI_REGISTRY/$CI_PROJECT_PATH:latest
+#   when: on_success
+#   dependencies:
+#     - push_image
