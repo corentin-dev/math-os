@@ -2,6 +2,12 @@
 
 A Linux ostree for math users.
 
+## Deploy gitlab runner
+
+```
+helm repo add gitlab https://charts.gitlab.io
+```
+
 <!--
 # Purpose
 

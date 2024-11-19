@@ -16,9 +16,9 @@ build_push:
     - schedules
   script:
     - |
-      echo "Building and pushing image"
+      echo "Building image"
       TIMESTAMP=$(date +%Y%m%d)
-      buildah build -t ${MY_IMAGE_NAME}:latest .
+      buildah build --build-arg BASE_IMAGE_NAME=aurora-dx -t ${MY_IMAGE_NAME}:latest .
       buildah tag ${MY_IMAGE_NAME}:latest ${MY_IMAGE_NAME}:$TIMESTAMP
 
   artifacts:

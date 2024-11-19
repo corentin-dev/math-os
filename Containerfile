@@ -6,8 +6,8 @@ ARG SOURCE_IMAGE="${SOURCE_IMAGE:-${BASE_IMAGE_NAME}-${IMAGE_FLAVOR}}"
 ARG BASE_IMAGE="ghcr.io/ublue-os/${SOURCE_IMAGE}"
 FROM ${BASE_IMAGE}:latest AS base
 
-COPY build.sh /tmp/build.sh
+COPY build-larema.sh /tmp/build-larema.sh
 
 RUN mkdir -p /var/lib/alternatives && \
-    /tmp/build.sh && \
+    /tmp/build-larema.sh && \
     ostree container commit
